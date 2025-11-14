@@ -556,8 +556,7 @@
         variant5 +
         variant6 +
         variant7 +
-        variant8 +
-        ".";
+        variant8 ;
       navigator.clipboard.writeText(textToCopy).then(
         function () {
           console.log("Texto copiado com sucesso.");
