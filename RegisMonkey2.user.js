@@ -159,7 +159,6 @@
     top: 14%;
     display: flex;
     align-items: center;
-    flex-direction: column;
     `;
 
     var contentBox = criarContentBox();
@@ -194,6 +193,8 @@
         padding: 8px;
         flex-direction: column;
         `;
+    var dd1 = document.createElement("div");
+    var dd2 = document.createElement("div");
 
     const linha1 = CriarLinha(1);
     const linha1T1 = document.createElement("p");
@@ -214,7 +215,7 @@
     linha1.appendChild(linha1in);
     linha1.appendChild(linha1T2);
 
-    contentBox.appendChild(linha1);
+    dd1.appendChild(linha1);
 
     const linha2 = CriarLinha(2);
 
@@ -230,7 +231,7 @@
 
     linha2.appendChild(linha2in);
 
-    contentBox.appendChild(linha2);
+    dd1.appendChild(linha2);
 
     const linha3 = CriarLinha(3);
 
@@ -239,7 +240,7 @@
       "Foi realizada a verificação no sistema e constatado que:";
 
     linha3.appendChild(linha3T1);
-    contentBox.appendChild(linha3);
+    dd1.appendChild(linha3);
 
     const linha4 = CriarLinha(4);
     const linha4in = CriarInput(1, "Situação");
@@ -251,14 +252,14 @@
       SalvarVari(1);
     });
     linha4.appendChild(linha4in);
-    contentBox.appendChild(linha4);
+    dd1.appendChild(linha4);
 
     const linha5 = CriarLinha(5);
     const linha5T1 = document.createElement("p");
     linha5T1.textContent =
       "A solicitação foi atendida da seguinte forma:";
     linha5.appendChild(linha5T1);
-    contentBox.appendChild(linha5);
+    dd1.appendChild(linha5);
 
     const linha6 = CriarLinha(6);
     const linha6in = CriarInput(1, "Resultado");
@@ -270,7 +271,8 @@
       SalvarVari(1);
     });
     linha6.appendChild(linha6in);
-    contentBox.appendChild(linha6);
+    dd1.appendChild(linha6);
+    contentBox.appendChild(dd1);
 
 
     const linha7 = CriarLinha(7);
@@ -279,7 +281,7 @@
     linha7T1.textContent = "Localizador - ";
     linha7.appendChild(linha7T1);
     linha7.appendChild(linha7in);
-    contentBox.appendChild(linha7);
+    dd2.appendChild(linha7);
 
     const motivos = [
       { motivo: 'Erro sistemico', waiver: 'Waiver 01' },
@@ -307,7 +309,7 @@
     linha8.appendChild(linha8T1);
     linha8.appendChild(linha8in);
     linha8.appendChild(linha8T2);
-    contentBox.appendChild(linha8);
+    dd2.appendChild(linha8);
 
 
     const linha9 = CriarLinha(9);
@@ -340,7 +342,7 @@
     // Inicializar com display none
     linha9.style.display = 'none';
 
-    contentBox.appendChild(linha9);
+    dd2.appendChild(linha9);
 
     const linha10 = CriarLinha(10);
     const linha10in = Criarselect('Sim', 'Não');
@@ -349,7 +351,7 @@
     linha10T1.textContent = "Isentou taxa DU? ";
     linha10.appendChild(linha10T1);
     linha10.appendChild(linha10in);
-    contentBox.appendChild(linha10);
+    dd2.appendChild(linha10);
 
 
     const motivosDU = [
@@ -395,7 +397,7 @@
     // Inicializar com display none
     linha11.style.display = 'none';
 
-    contentBox.appendChild(linha11);
+    dd2.appendChild(linha11);
 
     const linha12 = CriarLinha(12);
     const linha12in = Criarselect('Não se aplica', 'Sim', 'Não');
@@ -403,8 +405,39 @@
     const linha12T1 = document.createElement("p");
     linha12T1.textContent = "Utilizou link de pagamento?  ";
     linha12.appendChild(linha12T1);
-    linha12.appendChild(linha10in);
-    contentBox.appendChild(linha12);
+    linha12.appendChild(linha12in);
+    dd2.appendChild(linha12);
+
+    const linha13 = CriarLinha(13);
+    const linha13in = Criarselect('Sim, Sucesso', 'Sim, Falhou', 'Não');
+    linha13in.value = 'Não';
+    const linha13T1 = document.createElement("p");
+    linha13T1.textContent = "Fez Callback? ";
+    linha13.appendChild(linha13T1);
+    linha13.appendChild(linha13in);
+    dd2.appendChild(linha13);
+
+    const linha14 = CriarLinha(14);
+    const linha14in = Criarselect('Sim, Sucesso', 'Sim, Falhou', 'Não');
+    linha14in.value = 'Não';
+    const linha14T1 = document.createElement("p");
+    linha14T1.textContent = "Fez Callback? ";
+    linha14.appendChild(linha14T1);
+    linha14.appendChild(linha14in);
+    //dd2.appendChild(linha14);
+
+
+    var dd3 = document.createElement("div");
+    dd3.style.cssText = `
+    width: max-content;
+    `;
+
+
+
+    dd3.appendChild(dd1);
+    dd3.appendChild(dd2);
+    contentBox.appendChild(dd3);
+
 
     var buttonContainer = document.createElement("div");
     buttonContainer.id = "buttonContainer";
@@ -428,9 +461,12 @@
       linha6in.style.height = "25px";
       linha7in.value = "";
       linha8in.value = 'Não';
+      linha8T2.value = '';
       linha9in.value = "";
+      linha9.style.display = 'none';
       linha10in.value = 'Não';
       linha11in.value = "";
+      linha11.style.display = 'none';
       linha12in.value = 'Não se aplica';
     });
     buttonContainer.appendChild(botlimpar);
@@ -438,14 +474,9 @@
     const copyButton = CriarBotCopiar();
 
     copyButton.addEventListener("click", function () {
-      // Buscar Localizador PNR na página e, se vazio, preencher com linha7in
+      // Buscar Localizador PNR na página
       const pnrNaPagina = buscarLocalizadorPNR();
-      if (pnrNaPagina) {
-        // Se encontrou PNR na página e linha7in está vazio, preencher
-        if (!linha7in.value) {
-          linha7in.value = pnrNaPagina;
-        }
-      } else if (linha7in.value) {
+      if (linha7in.value && pnrNaPagina) {
         // Se não encontrou PNR na página mas linha7in tem valor, tentar preencher na página
         try {
           const pnrInput = document.querySelector('[id*="CReglinha7"] input');
@@ -466,43 +497,47 @@
       }
       var variant2;
       if (linha6in.value !== "") {
-        variant2 = linha5T1.textContent + "\n" + linha6in.value;
+        variant2 = linha5T1.textContent + "\n" + linha6in.value + ".";
       } else {
         variant2 = "";
       }
       var variant3;
       if (linha7in.value !== "") {
-        variant3 = "\n\n" + linha7T1.textContent + linha7in.value;
+        variant3 = "\n\n" + linha7T1.textContent + linha7in.value + ".";
       } else {
         variant3 = "";
       }
       var variant4;
       if (linha8in.value !== "") {
-        variant4 = "\n\n" + linha8T1.textContent + linha8in.value + linha8T2.textContent;
+        variant4 = "\n\n" + linha8T1.textContent + linha8in.value + linha8T2.textContent + ".";
       } else {
         variant4 = "";
       }
       var variant5;
       if (linha9in.value !== "") {
-        variant5 = "\n\n" + linha9T1.textContent + linha9in.value;
+        variant5 = "\n\n" + linha9T1.textContent + linha9in.value +
+          ".";
       } else {
         variant5 = "";
       }
       var variant6;
       if (linha10in.value !== "") {
-        variant6 = "\n\n" + linha10T1.textContent + linha10in.value;
+        variant6 = "\n\n" + linha10T1.textContent + linha10in.value +
+          ".";
       } else {
         variant6 = "";
       }
       var variant7;
       if (linha11in.value !== "") {
-        variant7 = "\n\n" + linha11T1.textContent + linha11in.value;
+        variant7 = "\n\n" + linha11T1.textContent + linha11in.value +
+          ".";
       } else {
         variant7 = "";
       }
       var variant8;
       if (linha12in.value !== "") {
-        variant8 = "\n\n" + linha12T1.textContent + linha12in.value;
+        variant8 = "\n\n" + linha12T1.textContent + linha12in.value +
+          ".";
       } else {
         variant8 = "";
       }
@@ -574,6 +609,7 @@
     var a = textarea ? "textarea" : "input";
     var b = document.createElement(a);
     b.style.cssText = `
+        
         margin: 0px 5px;
         width: 80px;
         border-radius: 10px;
@@ -583,6 +619,7 @@
         `;
     b.placeholder = Aplaceholder;
     if (textarea) {
+      b.style.maxHeight = "75px";
       b.style.width = "100%";
       b.style.height = "25px";
       b.style.overflow = "hidden";
@@ -623,7 +660,7 @@
         border: 3px solid rgb(255, 112, 32);
         border-radius: 15px;
         padding: 8px;
-        margin-top: 10px;
+        margin-left: 10px;
         flex-direction: column;
         `;
 
@@ -1256,21 +1293,6 @@
       }
     })();
 
-    // Buscar e preencher Localizador PNR em linha7in se vazio
-    (function preencherLocalizadorPNR() {
-      try {
-        const linha7in = document.querySelector('[id*="CReglinha7"] input');
-        if (linha7in && !linha7in.value) {
-          const pnr = buscarLocalizadorPNR();
-          if (pnr) {
-            linha7in.value = pnr;
-            log(`Localizador PNR preenchido automaticamente: ${pnr}`);
-          }
-        }
-      } catch (e) {
-        log("Erro ao preencher Localizador PNR:", e);
-      }
-    })();
 
     if (!numero) {
       log("Nenhum número de ticket encontrado na URL.");
