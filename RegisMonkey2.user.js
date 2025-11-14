@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         RegisMonkey2
-// @namespace    https://github.com/Hefestos-F/cc-result-monk
+// @namespace    https://github.com/Hefestos-F/outrosTem
 // @version      6.0.4
 // @description  that's all folks!
 // @author       You
 // @match        https://smileshelp.zendesk.com/agent/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=zendesk.com
-// @updateURL    https://raw.githubusercontent.com/Hefestos-F/cc-result-monk/main/RegisMonkey2.user.js
-// @downloadURL  https://raw.githubusercontent.com/Hefestos-F/cc-result-monk/main/RegisMonkey2.user.js
+// @updateURL    https://raw.githubusercontent.com/Hefestos-F/outrosTem/main/RegisMonkey2.user.js
+// @downloadURL  https://raw.githubusercontent.com/Hefestos-F/outrosTem/main/RegisMonkey2.user.js
 // @grant        none
 // ==/UserScript==
 
@@ -49,7 +49,10 @@
     };
 
     if (x || !DS) {
-      localStorage.setItem("DadosSalvosRegis", JSON.stringify(DadosAtuais));
+      localStorage.setItem(
+        "DadosSalvosRegis",
+        JSON.stringify(DadosAtuais)
+      );
     } else {
       nome = DS.nome;
       entrada1 = DS.entrada1;
@@ -150,12 +153,14 @@
   function criarAdditionalContent() {
     var additionalContent = document.createElement("div");
     additionalContent.id = "additionalContent";
-    additionalContent.style.position = "absolute";
-    additionalContent.style.left = "110%";
-    additionalContent.style.top = "14%";
-    additionalContent.style.display = "none";
-    additionalContent.style.alignItems = "center";
-    additionalContent.style.flexDirection = "column";
+    additionalContent.style.cssText = `
+    position: absolute;
+    left: 110%;
+    top: 14%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    `;
 
     var contentBox = criarContentBox();
     additionalContent.appendChild(contentBox);
@@ -194,7 +199,7 @@
     const linha1T1 = document.createElement("p");
     linha1T1.textContent = "O(A) ";
 
-    const linha1in = CriarInput(0);
+    const linha1in = CriarInput(0, '');
     linha1in.id = "input1";
     linha1in.value = nome;
     linha1in.addEventListener("input", () => {
@@ -250,7 +255,8 @@
 
     const linha5 = CriarLinha(5);
     const linha5T1 = document.createElement("p");
-    linha5T1.textContent = "A solicitação foi atendida da seguinte forma:";
+    linha5T1.textContent =
+      "A solicitação foi atendida da seguinte forma:";
     linha5.appendChild(linha5T1);
     contentBox.appendChild(linha5);
 
@@ -265,6 +271,140 @@
     });
     linha6.appendChild(linha6in);
     contentBox.appendChild(linha6);
+
+
+    const linha7 = CriarLinha(7);
+    const linha7in = CriarInput(0, 'Localizador');
+    const linha7T1 = document.createElement("p");
+    linha7T1.textContent = "Localizador - ";
+    linha7.appendChild(linha7T1);
+    linha7.appendChild(linha7in);
+    contentBox.appendChild(linha7);
+
+    const motivos = [
+      { motivo: 'Erro sistemico', waiver: 'Waiver 01' },
+      { motivo: 'Cliente Smiles Diamante categorizado cobrando assento', waiver: 'Waiver 01' },
+      { motivo: 'Regra tarifaria possui bagagem mas no VCR nao consta', waiver: 'Waiver 01' },
+      { motivo: 'Cancelamento dentro das 24 horas', waiver: 'Waiver 08' },
+      { motivo: 'Cancelamento de servicos antes do voo', waiver: 'Waiver 08' },
+      { motivo: 'Remarcacao laudo medico', waiver: 'Waiver 13' },
+      { motivo: 'Cancelamento laudo medico', waiver: 'Waiver 13' },
+      { motivo: 'Remarcacao concurso publico', waiver: 'Waiver 13' },
+      { motivo: 'Cancelamento concurso publico', waiver: 'Waiver 13' },
+      { motivo: 'Duplicidade de compra', waiver: 'Waiver 13' },
+      { motivo: 'Remarcacao erro do cliente dentro das 24 Horas', waiver: 'Waiver 13' },
+      { motivo: 'Cancelamento por acomodacao', waiver: 'Waiver 14' },
+      { motivo: 'Isencao de assento por acomodacao voo direto para conexao', waiver: 'Waiver 14' }
+    ];
+
+    const linha8 = CriarLinha(8);
+    const linha8in = Criarselect('Sim', 'Não');
+    linha8in.value = 'Não';
+    const linha8T1 = document.createElement("p");
+    linha8T1.textContent = "Utilizou Waiver ? ";
+    const linha8T2 = document.createElement("p");
+    linha8T2.textContent = "";
+    linha8.appendChild(linha8T1);
+    linha8.appendChild(linha8in);
+    linha8.appendChild(linha8T2);
+    contentBox.appendChild(linha8);
+
+
+    const linha9 = CriarLinha(9);
+    const motivosTexto = motivos.map(m => m.motivo);
+    const linha9in = Criarselect(...motivosTexto);
+    linha9in.value = 'Escolha o motivo';
+    const linha9T1 = document.createElement("p");
+    linha9T1.textContent = "Motivo da Waiver: ";
+    linha9.appendChild(linha9T1);
+    linha9.appendChild(linha9in);
+
+    linha9in.addEventListener("change", () => {
+      linha8T2.textContent = ` - ${motivos.find(m => m.motivo === linha9in.value).waiver}`;
+    });
+
+
+    // Controlar visibilidade baseado na seleção de waiver
+    linha8in.addEventListener("change", () => {
+      if (linha8in.value === 'Sim') {
+        linha8T2.style.display = 'flex';
+        linha9.style.display = 'flex';
+      } else {
+        linha8T2.style.display = 'none';
+        linha9.style.display = 'none';
+        linha9in.value = 'Escolha o motivo';
+        linha8T2.textContent = "";
+      }
+    });
+
+    // Inicializar com display none
+    linha9.style.display = 'none';
+
+    contentBox.appendChild(linha9);
+
+    const linha10 = CriarLinha(10);
+    const linha10in = Criarselect('Sim', 'Não');
+    linha10in.value = 'Não';
+    const linha10T1 = document.createElement("p");
+    linha10T1.textContent = "Isentou taxa DU? ";
+    linha10.appendChild(linha10T1);
+    linha10.appendChild(linha10in);
+    contentBox.appendChild(linha10);
+
+
+    const motivosDU = [
+      'Todas as vendas de receitas auxiliares',
+      'Parcelamento com duas formas de pagamento',
+      'Duas formas de pagamento que não sejam 2 cartões ou Travel Bank + Cartão de crédito',
+      'Reserva de criança nos casos onde o adulto já possua a reserva',
+      'Inclusao de infant na reserva',
+      'Erro no site',
+      'Isencao devido erro no cadastro',
+      'Erro emissao menor desacompanhado',
+      'Isencao devido SPEQ',
+      'Isencao devido assitencia emergencial',
+      'Isencao devido emissao MEDIF-FREMEC',
+      'Para residentes no Amapá',
+      'Remarcacao parcial',
+      'Remarcacao dentro das 24 horas',
+      'Remarcacao apos no-show',
+      'Cancelamentos'
+    ];
+
+
+    const linha11 = CriarLinha(11);
+    // usar a lista correta de motivosDU (array de strings)
+    const motivosDUTexto = motivosDU.slice();
+    const linha11in = Criarselect(...motivosDUTexto);
+    linha11in.value = 'Escolha o motivo';
+    const linha11T1 = document.createElement("p");
+    linha11T1.textContent = "Motivo da isenção: ";
+    linha11.appendChild(linha11T1);
+    linha11.appendChild(linha11in);
+
+    // Controlar visibilidade baseado na seleção do select de isenção (linha10in)
+    linha10in.addEventListener("change", () => {
+      if (linha10in.value === 'Sim') {
+        linha11.style.display = 'flex';
+      } else {
+        linha11.style.display = 'none';
+        linha11in.value = 'Escolha o motivo';
+      }
+    });
+
+    // Inicializar com display none
+    linha11.style.display = 'none';
+
+    contentBox.appendChild(linha11);
+
+    const linha12 = CriarLinha(12);
+    const linha12in = Criarselect('Não se aplica', 'Sim', 'Não');
+    linha12in.value = 'Não se aplica';
+    const linha12T1 = document.createElement("p");
+    linha12T1.textContent = "Utilizou link de pagamento?  ";
+    linha12.appendChild(linha12T1);
+    linha12.appendChild(linha10in);
+    contentBox.appendChild(linha12);
 
     var buttonContainer = document.createElement("div");
     buttonContainer.id = "buttonContainer";
@@ -286,6 +426,12 @@
       linha4in.style.height = "25px";
       linha6in.value = "";
       linha6in.style.height = "25px";
+      linha7in.value = "";
+      linha8in.value = 'Não';
+      linha9in.value = "";
+      linha10in.value = 'Não';
+      linha11in.value = "";
+      linha12in.value = 'Não se aplica';
     });
     buttonContainer.appendChild(botlimpar);
 
@@ -301,10 +447,47 @@
       }
       var variant2;
       if (linha6in.value !== "") {
-        variant2 = linha5T1.textContent + "\n" + linha6in.value + ".";
+        variant2 = linha5T1.textContent + "\n" + linha6in.value;
       } else {
         variant2 = "";
       }
+      var variant3;
+      if (linha7in.value !== "") {
+        variant3 = "\n\n" + linha7T1.textContent + linha7in.value;
+      } else {
+        variant3 = "";
+      }
+      var variant4;
+      if (linha8in.value !== "") {
+        variant4 = "\n\n" + linha8T1.textContent + linha8in.value + linha8T2.textContent;
+      } else {
+        variant4 = "";
+      }
+      var variant5;
+      if (linha9in.value !== "") {
+        variant5 = "\n\n" + linha9T1.textContent + linha9in.value;
+      } else {
+        variant5 = "";
+      }
+      var variant6;
+      if (linha10in.value !== "") {
+        variant6 = "\n\n" + linha10T1.textContent + linha10in.value;
+      } else {
+        variant6 = "";
+      }
+      var variant7;
+      if (linha11in.value !== "") {
+        variant7 = "\n\n" + linha11T1.textContent + linha11in.value;
+      } else {
+        variant7 = "";
+      }
+      var variant8;
+      if (linha12in.value !== "") {
+        variant8 = "\n\n" + linha12T1.textContent + linha12in.value;
+      } else {
+        variant8 = "";
+      }
+
       var textToCopy =
         linha1T1.textContent +
         textnome +
@@ -313,7 +496,14 @@
         linha2in.value +
         "\n\n" +
         variant1 +
-        variant2;
+        variant2 +
+        variant3 +
+        variant4 +
+        variant5 +
+        variant6 +
+        variant7 +
+        variant8 +
+        ".";
       navigator.clipboard.writeText(textToCopy).then(
         function () {
           console.log("Texto copiado com sucesso.");
@@ -361,7 +551,7 @@
     return a;
   }
 
-  function CriarInput(textarea, placeholder) {
+  function CriarInput(textarea, Aplaceholder) {
     var a = textarea ? "textarea" : "input";
     var b = document.createElement(a);
     b.style.cssText = `
@@ -372,8 +562,8 @@
         text-align: center;
         border-bottom: 2px solid rgb(209, 0, 0);
         `;
+    b.placeholder = Aplaceholder;
     if (textarea) {
-      b.placeholder = placeholder;
       b.style.width = "100%";
       b.style.height = "25px";
       b.style.overflow = "hidden";
@@ -384,6 +574,25 @@
       });
     }
     return b;
+  }
+
+  function Criarselect(...opcoes) {
+    var select = document.createElement("select");
+    select.style.cssText = `
+        margin: 0px 5px;
+        width: 80px;
+        border-radius: 10px;
+        padding: 1px;
+        text-align: center;
+        border-bottom: 2px solid rgb(209, 0, 0);
+        `;
+    opcoes.forEach(function (opcao) {
+      var option = document.createElement("option");
+      option.value = opcao;
+      option.textContent = opcao;
+      select.appendChild(option);
+    });
+    return select;
   }
 
   function criarContentBox2() {
@@ -411,7 +620,7 @@
 
     const botlim5 = CriarBotLimpar();
 
-    const Input5 = CriarInput(0);
+    const Input5 = CriarInput(0, '');
     Input5.placeholder = "XXXXXXX";
     Input5.id = "input5";
 
@@ -457,7 +666,7 @@
 
     const botlim6 = CriarBotLimpar();
 
-    const Input6 = CriarInput(0);
+    const Input6 = CriarInput(0, '');
     Input6.placeholder = "XXXXXXX";
     Input6.value = Cardhold;
 
@@ -523,7 +732,7 @@
 
     const botlim7 = CriarBotLimpar();
 
-    const Input7 = CriarInput(0);
+    const Input7 = CriarInput(0, '');
     Input7.placeholder = "ALMAVIVA.XXXXXXX-0300-MCZ";
     Input7.value = Assinatura;
 
@@ -649,7 +858,10 @@
     // Gerador de regex do texto do ticket ("Ticket #<n>")
     ticketRegexText: (n) =>
       new RegExp(
-        `Ticket\\s*#\\s*${String(n).replace(/[.*+?^${}()|[\\]\\\\]/g, "\\$&")}`,
+        `Ticket\\s*#\\s*${String(n).replace(
+          /[.*+?^${}()|[\\]\\\\]/g,
+          "\\$&"
+        )}`,
         "i"
       ),
 
@@ -659,7 +871,8 @@
 
   const LOG_PREFIX = "[TM encontrarNome]";
   const normalize = (s) => (s || "").replace(/\s+/g, " ").trim();
-  const log = (...args) => CONFIG.debug && console.log(LOG_PREFIX, ...args);
+  const log = (...args) =>
+    CONFIG.debug && console.log(LOG_PREFIX, ...args);
   const warn = (...args) => console.warn(LOG_PREFIX, ...args);
 
   /** ===========================
@@ -788,7 +1001,7 @@
           childList: true,
           characterData: true,
         });
-      } catch {}
+      } catch { }
 
       const interval = setInterval(() => {
         tryFind();
@@ -798,7 +1011,7 @@
       function cleanup() {
         try {
           mo.disconnect();
-        } catch {}
+        } catch { }
         clearInterval(interval);
       }
     });
@@ -865,17 +1078,23 @@
     try {
       if (ticketEl) ticketEl.style.borderBottom = "1px solid #0ea5e9";
       if (nameEl) nameEl.style.borderBottom = "1px solid #f97316";
-    } catch {}
+    } catch { }
   }
 
   /** ===========================
    *  API: encontrarNome(ticketNumber)
    *  =========================== */
   async function encontrarNome(ticketNumber) {
-    const ticketStr = ticketNumber == null ? "" : String(ticketNumber).trim();
+    const ticketStr =
+      ticketNumber == null ? "" : String(ticketNumber).trim();
     if (!ticketStr) {
       // Sem número => aplica "Anônimo" conforme regra do input1
-      applyToInput(document, CONFIG.input1Selector, CONFIG.input1Mode, "");
+      applyToInput(
+        document,
+        CONFIG.input1Selector,
+        CONFIG.input1Mode,
+        ""
+      );
       warn("Nenhum número de ticket fornecido a encontrarNome().");
       return null;
     }
@@ -886,7 +1105,12 @@
       CONFIG.waitTimeoutMs
     );
     if (!found) {
-      applyToInput(document, CONFIG.input1Selector, CONFIG.input1Mode, "");
+      applyToInput(
+        document,
+        CONFIG.input1Selector,
+        CONFIG.input1Mode,
+        ""
+      );
       warn(
         `Ticket #${ticketStr} não apareceu neste contexto em ${CONFIG.waitTimeoutMs}ms.`
       );
@@ -896,7 +1120,12 @@
     const { container, nameEl } = found;
 
     if (!nameEl) {
-      applyToInput(document, CONFIG.input1Selector, CONFIG.input1Mode, "");
+      applyToInput(
+        document,
+        CONFIG.input1Selector,
+        CONFIG.input1Mode,
+        ""
+      );
       warn(`Nome anterior ao Ticket #${ticketStr} não encontrado.`);
       return null;
     }
@@ -926,9 +1155,50 @@
   }
 
   /** ===========================
+   *  Buscar Localizador PNR na página
+   *  =========================== */
+  function buscarLocalizadorPNR() {
+    try {
+      // Procura por elementos que contenham "Localizador PNR" ou "PNR" próximos a inputs
+      const allElements = document.querySelectorAll('*');
+      for (const el of allElements) {
+        const text = (el.textContent || "").toUpperCase();
+        if (text.includes("LOCALIZADOR") && (text.includes("PNR") || text.includes("BOOKING"))) {
+          // Procura input ou campo próximo
+          const input = el.querySelector('input, [contenteditable]');
+          if (input && input.value) {
+            return input.value.trim();
+          }
+          // Procura irmão próximo
+          let sibling = el.nextElementSibling;
+          while (sibling && !sibling.value) {
+            if (sibling.tagName === 'INPUT' || sibling.contentEditable === 'true') {
+              if (sibling.value) return sibling.value.trim();
+            }
+            sibling = sibling.nextElementSibling;
+          }
+          // Procura em parent
+          let parent = el.parentElement;
+          while (parent && parent !== document.body) {
+            const inputInParent = parent.querySelector('input[value], [contenteditable][text-content]');
+            if (inputInParent && inputInParent.value) {
+              return inputInParent.value.trim();
+            }
+            parent = parent.parentElement;
+          }
+        }
+      }
+    } catch (e) {
+      log("Erro ao buscar Localizador PNR:", e);
+    }
+    return null;
+  }
+
+  /** ===========================
    *  API: encontrarTk()
    *  - Extrai número do ticket da URL do contexto atual
    *  - Preenche #input5 conforme CONFIG.input5Mode (inclui valueIfEmpty)
+   *  - Busca e preenche linha7in com Localizador PNR se vazio
    *  - Chama encontrarNome(numero)
    *  =========================== */
   async function encontrarTk() {
@@ -967,10 +1237,31 @@
       }
     })();
 
+    // Buscar e preencher Localizador PNR em linha7in se vazio
+    (function preencherLocalizadorPNR() {
+      try {
+        const linha7in = document.querySelector('[id*="CReglinha7"] input');
+        if (linha7in && !linha7in.value) {
+          const pnr = buscarLocalizadorPNR();
+          if (pnr) {
+            linha7in.value = pnr;
+            log(`Localizador PNR preenchido automaticamente: ${pnr}`);
+          }
+        }
+      } catch (e) {
+        log("Erro ao preencher Localizador PNR:", e);
+      }
+    })();
+
     if (!numero) {
       log("Nenhum número de ticket encontrado na URL.");
       // Ainda aplica "Anônimo" no input1 conforme regra definida
-      applyToInput(document, CONFIG.input1Selector, CONFIG.input1Mode, "");
+      applyToInput(
+        document,
+        CONFIG.input1Selector,
+        CONFIG.input1Mode,
+        ""
+      );
       return null;
     }
 
@@ -1016,12 +1307,13 @@
         childList: true,
         characterData: true,
       });
-    } catch {}
+    } catch { }
 
     // Observar mudanças de URL (SPA)
     try {
       if (!window.__tm_loc_hooked__) {
-        const fire = () => window.dispatchEvent(new Event("locationchange"));
+        const fire = () =>
+          window.dispatchEvent(new Event("locationchange"));
         const _push = history.pushState;
         history.pushState = function () {
           const r = _push.apply(this, arguments);
@@ -1046,7 +1338,7 @@
     try {
       window.encontrarTk = encontrarTk;
       window.encontrarNome = encontrarNome;
-    } catch {}
+    } catch { }
   }
 
   // Início
