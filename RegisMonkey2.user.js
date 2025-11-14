@@ -438,6 +438,25 @@
     const copyButton = CriarBotCopiar();
 
     copyButton.addEventListener("click", function () {
+      // Buscar Localizador PNR na página e, se vazio, preencher com linha7in
+      const pnrNaPagina = buscarLocalizadorPNR();
+      if (pnrNaPagina) {
+        // Se encontrou PNR na página e linha7in está vazio, preencher
+        if (!linha7in.value) {
+          linha7in.value = pnrNaPagina;
+        }
+      } else if (linha7in.value) {
+        // Se não encontrou PNR na página mas linha7in tem valor, tentar preencher na página
+        try {
+          const pnrInput = document.querySelector('[id*="CReglinha7"] input');
+          if (pnrInput && !pnrInput.value) {
+            pnrInput.value = linha7in.value;
+          }
+        } catch (e) {
+          log("Erro ao preencher PNR na página:", e);
+        }
+      }
+
       var textnome = linha1in.value || linha1in.placeholder;
       var variant1;
       if (linha4in.value !== "") {
