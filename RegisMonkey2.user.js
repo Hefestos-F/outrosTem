@@ -284,19 +284,20 @@
     dd2.appendChild(linha7);
 
     const motivos = [
-      { motivo: 'Erro sistemico', waiver: 'Waiver 01' },
+      { motivo: 'Erro sistêmico', waiver: 'Waiver 01' },
       { motivo: 'Cliente Smiles Diamante categorizado cobrando assento', waiver: 'Waiver 01' },
-      { motivo: 'Regra tarifaria possui bagagem mas no VCR nao consta', waiver: 'Waiver 01' },
+      { motivo: 'Regra tarifaria possui bagagem mas no VCR não consta', waiver: 'Waiver 01' },
       { motivo: 'Cancelamento dentro das 24 horas', waiver: 'Waiver 08' },
-      { motivo: 'Cancelamento de servicos antes do voo', waiver: 'Waiver 08' },
-      { motivo: 'Remarcacao laudo medico', waiver: 'Waiver 13' },
+      { motivo: 'Cancelamento de serviços antes do voo', waiver: 'Waiver 08' },
+      { motivo: 'CNN ao Lado do Responsável', waiver: 'Waiver 08' },
+      { motivo: 'Remarcação laudo medico', waiver: 'Waiver 13' },
       { motivo: 'Cancelamento laudo medico', waiver: 'Waiver 13' },
-      { motivo: 'Remarcacao concurso publico', waiver: 'Waiver 13' },
+      { motivo: 'Remarcação concurso publico', waiver: 'Waiver 13' },
       { motivo: 'Cancelamento concurso publico', waiver: 'Waiver 13' },
       { motivo: 'Duplicidade de compra', waiver: 'Waiver 13' },
-      { motivo: 'Remarcacao erro do cliente dentro das 24 Horas', waiver: 'Waiver 13' },
-      { motivo: 'Cancelamento por acomodacao', waiver: 'Waiver 14' },
-      { motivo: 'Isencao de assento por acomodacao voo direto para conexao', waiver: 'Waiver 14' }
+      { motivo: 'Remarcação erro do cliente dentro das 24 Horas', waiver: 'Waiver 13' },
+      { motivo: 'Cancelamento por acomodação', waiver: 'Waiver 14' },
+      { motivo: 'Isenção de assento por acomodação voo direto para conexão', waiver: 'Waiver 14' }
     ];
 
     const linha8 = CriarLinha(8);
@@ -409,7 +410,11 @@
     dd2.appendChild(linha12);
 
     const linha13 = CriarLinha(13);
-    const linha13in = Criarselect('Sim, Sucesso', 'Sim, Falhou', 'Não');
+    const linha13in = Criarselect('Sim, Sucesso',
+      'Sim, Falhou, Caixa Postal',
+      'Sim, Falhou, Erro Nice',
+      'Sim, Falhou, Não Atendeu',
+      'Não');
     linha13in.value = 'Não';
     const linha13T1 = document.createElement("p");
     linha13T1.textContent = "Fez Callback? ";
@@ -417,21 +422,11 @@
     linha13.appendChild(linha13in);
     dd2.appendChild(linha13);
 
-    const linha14 = CriarLinha(14);
-    const linha14in = Criarselect('Sim, Sucesso', 'Sim, Falhou', 'Não');
-    linha14in.value = 'Não';
-    const linha14T1 = document.createElement("p");
-    linha14T1.textContent = "Fez Callback? ";
-    linha14.appendChild(linha14T1);
-    linha14.appendChild(linha14in);
-    //dd2.appendChild(linha14);
-
 
     var dd3 = document.createElement("div");
     dd3.style.cssText = `
     width: max-content;
     `;
-
 
 
     dd3.appendChild(dd1);
@@ -461,13 +456,14 @@
       linha6in.style.height = "25px";
       linha7in.value = "";
       linha8in.value = 'Não';
-      linha8T2.value = '';
+      linha8T2.textContent = '';
       linha9in.value = "";
       linha9.style.display = 'none';
       linha10in.value = 'Não';
       linha11in.value = "";
       linha11.style.display = 'none';
       linha12in.value = 'Não se aplica';
+      linha13in.value = 'Não';
     });
     buttonContainer.appendChild(botlimpar);
 
@@ -541,6 +537,13 @@
       } else {
         variant8 = "";
       }
+      var variant9;
+      if (linha13in.value !== "") {
+        variant9 = "\n\n" + linha13T1.textContent + linha13in.value +
+          ".";
+      } else {
+        variant9 = "";
+      }
 
       var textToCopy =
         linha1T1.textContent +
@@ -556,7 +559,8 @@
         variant5 +
         variant6 +
         variant7 +
-        variant8 ;
+        variant8 +
+        variant9;
       navigator.clipboard.writeText(textToCopy).then(
         function () {
           console.log("Texto copiado com sucesso.");
